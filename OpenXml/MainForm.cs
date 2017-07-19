@@ -13,35 +13,35 @@ using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace OpenXml
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public Form1()
+        OpenFileDialog myOpenFileDialog = new OpenFileDialog();
+
+        public MainForm()
         {
             InitializeComponent();
+
+            myOpenFileDialog.Filter = "files (*.xlsx)|*.xlsx";
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnImport_Click(object sender, EventArgs e)
         {
-
-
-
             Stream myStream = null;
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
-            openFileDialog1.InitialDirectory = "C:\\Users\\Mew\\Documents\\Visual Studio 2017\\Projects\\OpenXml\\TestFilesExcel";
-            openFileDialog1.Filter = "files (*.xlsx)|*.xlsx";
-            openFileDialog1.FilterIndex = 1;
-            openFileDialog1.RestoreDirectory = true;
 
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            //openFileDialog1.InitialDirectory = "C:\\Users\\Mew\\Documents\\Visual Studio 2017\\Projects\\OpenXml\\TestFilesExcel";
+            myOpenFileDialog.FilterIndex = 1;
+            //openFileDialog1.RestoreDirectory = true;
+
+            if (myOpenFileDialog.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
-                    if ((myStream = openFileDialog1.OpenFile()) != null)
+                    if ((myStream = myOpenFileDialog.OpenFile()) != null)
                     {
                         using (myStream)
                         {
-                            string fileName = openFileDialog1.FileName;
+                            string fileName = myOpenFileDialog.FileName;
                             string today = null;
                             //@"C:\users\Mew\Downloads\CEASARIO CONCHITA.xlsx";
                             //DateTime test2 = DateTime.UtcNow.Date;
@@ -49,8 +49,8 @@ namespace OpenXml
                             string value = GetCellValue(fileName, "Sheet1", "A7");
                             string lotNumberValue = GetCellValue(fileName, "Sheet1", "B8");
                             string blockNumberValue = GetCellValue(fileName, "Sheet1", "B9");
-                            
-                           
+
+
                             MessageBox.Show("Name: " + value +
                                             "\nLot: " + lotNumberValue +
                                             "\nBlock: " + blockNumberValue +
@@ -68,11 +68,11 @@ namespace OpenXml
         private string GetDateValue(string today)
         {
             DateTime today1 = DateTime.UtcNow.Date;
-            
+
             return today1.ToString("MMMM dd, yyyy");
         }
 
-      
+
 
         public static string GetCellValue(string fileName,
             string sheetName,
@@ -163,7 +163,30 @@ namespace OpenXml
 
         private void button3_Click(object sender, EventArgs e)
         {
-            
+
+        }
+
+        private void btnTest_Click(object sender, EventArgs e)
+        {
+            if (myOpenFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                using (MyExcelReader reader = new MyExcelReader(myOpenFileDialog.FileName))
+                {
+                    var name = reader.ReadValue("Sheet1", "A7");
+                    var lotNumber = reader.ReadValue("Sheet1", "B8");
+                    var blockNumber = reader.ReadValue("Sheet1", "B9");
+
+                    tbName.Text = name.ToString();
+                    tbLot.Text = lotNumber.ToString();
+                    tbBlock.Text = blockNumber.ToString();
+
+                    MessageBox.Show("Name: " + name +
+                                    "\nLot: " + lotNumber +
+                                    "\nBlock: " + blockNumber +
+                                    "\nDate Computed: " + DateTime.Now.ToString("MMMM dd, yyyy"));
+                }
+            }
+
         }
     }
 }
